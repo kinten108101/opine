@@ -493,6 +493,21 @@ and statement (s : State.t) stmt =
     let s = fill s "" in
     Base.Hashtbl.update s.expr_precedences ~f:(fun _ -> Precedence.Yield) value;
     expr s value
+  | For { target; iter; body; orelse; _ } ->
+    let s = fill s "for " in
+    let s = expr s target in
+    let s = s ++= " in " in
+    let s = expr s iter in
+    let s = block s (fun s -> Base.List.fold body ~init:s ~f:statement) in
+    let s = ref s in
+    ( match orelse with
+    | [] -> ()
+    | orelse ->
+      s := fill !s "else";
+      s := block !s (fun s -> Base.List.fold orelse ~init:s ~f:statement)
+    );
+    let s = !s in
+    s
   | If { test; body; orelse; _ } ->
     let s = fill s "if " in
     let s = expr s test in
