@@ -477,6 +477,8 @@ and statement (s : State.t) stmt =
     s
   | FunctionDef { decorator_list; name; args; body; returns; _ } as node ->
     function_helper s node ~decorator_list ~name ~args ~body ~returns ~def:"def"
+  | AsyncFunctionDef { decorator_list; name; args; body; returns; _ } as node ->
+    function_helper s node ~decorator_list ~name ~args ~body ~returns ~def:"async def"
   | Assign { targets; value; _ } ->
     let s = fill s "" in
     let process_target s tgt =
