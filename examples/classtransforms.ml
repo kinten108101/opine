@@ -50,7 +50,7 @@ let transform_stmt ~f stmt =
 let transform_method_body ~f func bmm_idxs =
   let open Statement in
   match func with
-  | FunctionDef { body; location; args; decorator_list; name; returns; type_comment } ->
+  | FunctionDef { body; location; args; decorator_list; name; returns; type_comment; type_params } ->
     let body = Array.of_list body in
     List.iter bmm_idxs ~f:(fun i ->
       let bmm_stmt = body.(i) in
@@ -65,6 +65,7 @@ let transform_method_body ~f func bmm_idxs =
       ~name
       ?returns
       ?type_comment
+      ~type_params
       ()
   | _ -> func
 ;;
@@ -166,7 +167,7 @@ let rec py_module (s : State.t) m =
 
 and statement s stmt =
   match stmt with
-  | ClassDef { body; location; name; keywords; decorator_list; bases } ->
+  | ClassDef { body; location; name; keywords; decorator_list; bases; type_params } ->
     let body = Array.of_list body in
     let body = apply_transformations s body in
     let body = Array.to_list body in
@@ -184,6 +185,7 @@ and statement s stmt =
         ~keywords
         ~decorator_list
         ~body
+        ~type_params
         ()
     in
     stmt
