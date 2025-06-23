@@ -604,6 +604,10 @@ and expr (s : State.t) e =
     require_parens s op_prec node_prec f
   | Constant { value = String no_quote_str; _ } -> s ++= ("\"" ^ no_quote_str ^ "\"")
   | Constant { value; _ } -> s ++= constant value
+  | Await { value } ->
+    let s = s ++= ("await" ^ " ") in
+    let s = expr s value in
+    s
   | Lambda { args; body; _ } as node ->
     let node_prec =
       Option.value (Hashtbl.find s.expr_precedences node) ~default:Precedence.Test
